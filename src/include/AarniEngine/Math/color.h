@@ -5,7 +5,7 @@
 #include <math.h>
 #include <vector>
 
-#include <AarniEngine/curve.h>
+#include <AarniEngine/Math/curve.h>
 
 struct Color
 {

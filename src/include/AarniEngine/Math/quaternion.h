@@ -2,7 +2,7 @@
 #define _QUATERNIONH_
 #include <math.h>
 
-#include <AarniEngine/vector.h>
+#include <AarniEngine/Math/vector.h>
 
 //TODO
 //eulerAngles. Figure out how to present angles with vector3, then program the function.

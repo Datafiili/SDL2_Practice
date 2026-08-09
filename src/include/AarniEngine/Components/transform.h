@@ -3,9 +3,9 @@
 
 #include <iostream>
 
-#include <AarniEngine/vector.h>
 #include <AarniEngine/component.h>
-#include <AarniEngine/quaternion.h>
+#include <AarniEngine/Math/vector.h>
+#include <AarniEngine/Math/quaternion.h>
 
 class Transform: public Component
 {
@@ -14,9 +14,16 @@ class Transform: public Component
         Quaternion rotation = Quaternion::Zero();
         Vector3 scale = Vector3::Zero();
 
-        void Start()
+        Transform(Vector3 pos = {0,0,0}, Quaternion rot = {0,0,0,0}, Vector3 scl = {0,0,0})
         {
+            position = pos;
+            rotation = rot;
+            scale = scl;
             componentType = transform;
+        }
+
+        void Start() override
+        {
         }
 
         void Reset() override
@@ -48,6 +55,16 @@ class Transform: public Component
             rotation += other.rotation;
             scale += other.scale;
             return *this;
+        }
+
+        Vector3 GetWorldPosition(Vector3 total = {0,0,0}) override
+        {
+            total += position;
+            if(parent == nullptr)
+            {
+                return total;
+            }
+            return parent->GetWorldPosition(total);
         }
 
         friend Transform operator+(Transform t1, const Transform& t2)

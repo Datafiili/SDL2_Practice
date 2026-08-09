@@ -6,11 +6,15 @@
 class CircleCollider: public Component
 {
     public:
+        CircleCollider()
+        {
+            componentType = circleCollider2D;
+        }
+
         float radius = 10.0f;
         Vector2 offset = {0,0};
         void Start() override
         {
-            componentType = circleCollider2D;
         }
 
         void Update(double deltaTime) override

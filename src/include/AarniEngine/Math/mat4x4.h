@@ -1,7 +1,7 @@
 #ifndef _MAT4X4H_
 #define _MAT4X4H_
 
-#include <AarniEngine/vector.h>
+#include <AarniEngine/Math/vector.h>
 
 struct Mat4x4{
     float m[4][4] = {0}; //row by column
@@ -38,15 +38,36 @@ struct Mat4x4{
 
     static void MultiplyMatrixVector(Vector3 &inputVector, Vector3 &outputVector, Mat4x4 &matrix)
     {
-        for(int i = 0; i < 3; i++)
-        {
-            outputVector.x = inputVector.x * matrix.m[0][i] + inputVector.y * matrix.m[1][i] + inputVector.z * matrix.m[2][i] + matrix.m[3][i];
-        }
+        
+        outputVector.x = inputVector.x * matrix.m[0][0] + inputVector.y * matrix.m[1][0] + inputVector.z * matrix.m[2][0] + matrix.m[3][0];
+        outputVector.y = inputVector.x * matrix.m[0][1] + inputVector.y * matrix.m[1][1] + inputVector.z * matrix.m[2][1] + matrix.m[3][1];
+        outputVector.z = inputVector.x * matrix.m[0][2] + inputVector.y * matrix.m[1][2] + inputVector.z * matrix.m[2][2] + matrix.m[3][2];
         float w = inputVector.x * matrix.m[0][3] + inputVector.y * matrix.m[1][3] +  inputVector.z * matrix.m[2][3] + matrix.m[3][3];
         if(w != 0.0f)
         {
             outputVector /= w;
         }
     }
+
+     // ----- Printing ----- //
+    friend std::ostream& operator<<(std::ostream& os, const Mat4x4& pt); //overriding << operator
 };
+
+std::ostream& operator<<(std::ostream& os, const Mat4x4& m) // overriding << operator
+{
+    os << "Matrix 4x4:\n";
+    for(int i = 0; i < 4; i++)
+    {
+        os << "[";
+        for(int k = 0; k < 4; k++)
+        {
+            os << m.m[i][k];
+            if(k < 3){ os << ", "; }
+        }
+        os << "]";
+        if(i < 3){ os << "\n";}
+    }
+    return os;
+}
+
 #endif

@@ -21,40 +21,70 @@
 //SDL2
 #include <SDL2/SDL.h>
 
+// ----- Time ----- //
+double deltaTime;
+clock_t t1, t2; //Time at start and end of the frame
+double elapsedTime = 0;
+double sessionTime = 0; //Total time the session has been on in milliseconds.
+int fpsLimiter = 60;
+
+
+const int screenWidth = 1000;
+const int screenHeigth = 1000;
+SDL_Window *Window;
+SDL_Renderer *RenderInformation;
+
 //My own libraries
 #include <AarniEngine/input.h>
-#include <AarniEngine/vector.h>
-#include <AarniEngine/color.h>
-#include <AarniEngine/curve.h>
-#include <AarniEngine/quaternion.h>
-#include <AarniEngine/mat4x4.h>
+#include <AarniEngine/Math/vector.h>
+#include <AarniEngine/Math/color.h>
+#include <AarniEngine/Math/curve.h>
+#include <AarniEngine/Math/quaternion.h>
+#include <AarniEngine/Math/mat4x4.h>
+#include <AarniEngine/Graphics/mesh.h>
 
 #include <AarniEngine/component.h>
 
 #include <AarniEngine/Components/transform.h>
-#include <AarniEngine/Components/renderer.h>
 #include <AarniEngine/Components/camera.h>
 #include <AarniEngine/Components/circleCollider.h>
-#include <AarniEngine/Components/ball.h>
 #include <AarniEngine/Components/spriteRenderer.h>
 
 Component *root = new Component(); //root object. Every thing will be built on top of this. Components consists an array of child components.
 
+Camera *mainCamera = nullptr;
+
 #include <AarniEngine/renderEngine.h>
-#include <AarniEngine/physicsEngine.h>
-#include <AarniEngine/mesh.h>
+
+#include <AarniEngine/Components/meshRenderer.h>
+
+bool createWindow()
+{
+    SDL_Init(SDL_INIT_VIDEO);
+
+    Window = SDL_CreateWindow("SDL Practice",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,screenWidth,screenHeigth,SDL_WINDOW_ALLOW_HIGHDPI);
+    if (Window != NULL)
+    {
+        RenderInformation = SDL_CreateRenderer(Window, -1, 0);
+        std::cout << "Did create a window!" << std::endl; 
+    }
+    else
+    {
+        std::cout << "Could not create window: " << SDL_GetError() << std::endl;
+    }
+    return Window != NULL;
+}
+
+void closeWindow()
+{
+    SDL_DestroyWindow(Window);
+    SDL_Quit();
+}
 
 //Function declaration
 void Start();
 void Update();
 bool endApp = false;
-
-// ----- Time ----- //
-double deltaTime;
-clock_t t1, t2; //Time at start and end of the frame
-double elapsedTime;
-double sessionTime = 0; //Total time the session has been on.
-int fpsLimiter = 60;
 
 int main(int argc, char *argv[])
 {
@@ -92,21 +122,20 @@ int main(int argc, char *argv[])
             break;
         }
 
+        clearFrame();
+        
         UpdateInputs();
         Update();
         UpdatePreviousInputs();
         root->UpdateRecursive(deltaTime);
-
-        //PhysicsEngine();
-        renderFrame(root, sessionTime);
+        renderFrame();
 
         //fps limiter
         Sleep(std::max(0.0,(1000 / fpsLimiter) - (deltaTime * 1000)));
 
         //Calculating passing time.
         t2 = clock();
-        elapsedTime = ((double)(t2 - t1)) / ((double)CLOCKS_PER_SEC);
-        deltaTime = elapsedTime;
+        deltaTime = ((double)(t2 - t1)) / ((double)CLOCKS_PER_SEC);
         t1 = t2;
         sessionTime += deltaTime;
     }

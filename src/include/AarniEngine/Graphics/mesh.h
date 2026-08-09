@@ -1,7 +1,6 @@
 #ifndef _MESHH_
 #define _MESHH_
-#include <AarniEngine/vector.h>
-#include <AarniEngine/Components/transform.h>
+#include <AarniEngine/Math/vector.h>
 
 #include <iostream>
 #include <fstream>
@@ -22,13 +21,16 @@ struct Mesh
     static Mesh LoadModel(std::string filename)
     {
         Mesh m = {};
-        
+        filename = "src/Game/Models/" + filename;
         // # ----- Quick counting ----- # //
         std::string rowText;
         int vertexMaxCount = 0;
         int faceMaxCount = 0;
         // Counts the amount of vertexes, faces, etc. in the file.
         std::ifstream MyReadFile(filename);
+        if (!MyReadFile.is_open()) {
+            std::cerr << "Failed to open file\n";
+        }
         while (std::getline (MyReadFile, rowText))
         {
             char arr[rowText.length() + 1]; //char arr version of the string.
@@ -44,6 +46,7 @@ struct Mesh
                 faceMaxCount++;
             }
         }
+
         
         m.vertexCount = vertexMaxCount;
         m.faceCount = faceMaxCount;

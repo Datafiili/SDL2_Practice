@@ -3,45 +3,8 @@
 
 #include <SDL2/SDL_image.h>
 #include <string>
-#include <AarniEngine/sprite.h>
-#include <AarniEngine/component.h>
 
-
-//Application variables
-SDL_Window *Window;
-SDL_Renderer *RenderInformation;
-const int screenWidth = 1000;
-const int screenHeigth = 1000;
 int backgroundColour[3] = {125,125,125};
-
-bool createWindow()
-{
-    SDL_Init(SDL_INIT_VIDEO);
-
-    Window = SDL_CreateWindow("SDL Practice",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,screenWidth,screenHeigth,SDL_WINDOW_ALLOW_HIGHDPI);
-    if (Window != NULL)
-    {
-        RenderInformation = SDL_CreateRenderer(Window, -1, 0);
-        std::cout << "Did create a window!" << std::endl; 
-    }
-    else
-    {
-        std::cout << "Could not create window: " << SDL_GetError() << std::endl;
-    }
-    return Window != NULL;
-}
-
-void closeWindow()
-{
-    SDL_DestroyWindow(Window);
-    SDL_Quit();
-}
-
-struct RenderObject
-{
-    Transform transform; //Calculated value of all transfroms from root to renderer.
-    Renderer renderer;
-};
 
 void drawCircle(int xc, int yc, int x, int y, Color color = {0,0,0,255}){
     SDL_SetRenderDrawColor(RenderInformation,color.r, color.g, color.b, color.a);
@@ -557,27 +520,29 @@ void drawTriangleFill(float x1, float y1, float x2, float y2, float x3, float y3
     drawTriangleFill(arr,color);
 }
 
-
-
+/*
 void renderSprite(Sprite sprite, SDL_Rect dstRect)
 {
-    SDL_Texture* texture =
-        SDL_CreateTextureFromSurface(RenderInformation, sprite.sourceImage);
-    SDL_FreeSurface(sprite.sourceImage);
-
-    //SDL_RenderCopy(RenderInformation, texture, &(sprite.GetSrcRect(sprite.currentIndex)), &dstRect); // &srcRect, &dstRect);
+    if(sprite.sourceImage == NULL) //Missing image.
+    {
+        return;
+    }
+    
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(RenderInformation, sprite.sourceImage);
+    SDL_Rect r = sprite.GetSrcRect(sprite.spriteIndex);
+    SDL_RenderCopy(RenderInformation, texture, &r, &dstRect);
 }
+*/
 
-void renderFrame(Component *root, double elapsed)
+void clearFrame()
 {
     // ----- Draw background ----- //
     SDL_SetRenderDrawColor(RenderInformation, backgroundColour[0], backgroundColour[1], backgroundColour[2], 255);
     SDL_RenderClear(RenderInformation); //Fills the screen with the background colour
-    SDL_Rect srcRect = {0,0,32,32};
-    SDL_Rect dstRect = {0,0,500,500};
-    //renderSprite("Keys.png", dstRect, srcRect);
-    drawLineAntiAliasing(500,500,600,600);
+}
 
+void renderFrame()
+{
     SDL_RenderPresent(RenderInformation); //Draws things.
 }
 

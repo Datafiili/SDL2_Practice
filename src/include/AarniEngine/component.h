@@ -1,17 +1,25 @@
 #ifndef _COMPONENTH_
 #define _COMPONENTH_
 
-#include <AarniEngine/Engine.h>
-
 enum ComponentType {
     empty,
     transform,
-    renderer,
     camera,
     circleCollider2D,
     ball,
     spriteRenderer,
+    meshRenderer,
 };
+
+std::ostream& operator<<(std::ostream& os, ComponentType c) {
+    switch (c) {
+        case ComponentType::empty:          return os << "Epmty";
+        case ComponentType::transform:      return os << "Transform";
+        case ComponentType::camera:         return os << "Camera";
+        case ComponentType::meshRenderer:         return os << "MeshRenderer";
+    }
+    return os << c;
+}
 
 class Component
 {
@@ -25,7 +33,12 @@ class Component
         Component *parent = nullptr;
         
         enum ComponentType componentType = empty;
-    
+        
+        Component()
+        {
+            componentType = empty;
+        }
+
     void StartRecursive() //Recursivly Starts all components.
     {
         Start();
@@ -56,7 +69,6 @@ class Component
     {
         if(c == nullptr){c = this;}
         if(c->childCount == 0){ return value; }
-        
         int greatest = 0;
         for(int i = 0; i < c->childCount; i++)
         {
@@ -67,6 +79,28 @@ class Component
             }
         }
         return greatest;
+    }
+
+    void PrintTree(int level = 0)
+    {
+        for(int i = 0; i < level; i++)
+        {
+            std::cout << "\t";
+        }
+        std::cout << componentType << std::endl;
+        for(int i = 0; i < childCount; i++)
+        {
+            children[i]->PrintTree(level + 1);
+        }
+    }
+
+    virtual Vector3 GetWorldPosition(Vector3 total = {0,0,0})
+    {
+        if(parent == nullptr)
+        {
+            return total;
+        }
+        return parent->GetWorldPosition(total);
     }
 };
 
